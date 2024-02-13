@@ -81,3 +81,19 @@ func main() {
 func mockCommand(cmd *cobra.Command, args []string){
 	fmt.Println("this is a mock command")
 }
+
+func countCharsCmdF(cmd *cobra.Command, args []string){
+
+}
+
+func countWordsCmdF(cmd *cobra.Command, args []string){
+
+}
+
+func countLinesCmdF(cmd *cobra.Command, args []string){
+
+}
+
+func countBytesCmdF(cmd *cobra.Command, args []string){
+	
+}
