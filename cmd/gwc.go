@@ -57,6 +57,13 @@ DESCRIPTION
 AUTHOR
 	Written by Arnaud Wanet (IronOnet)
 
+REPORTING BUGS 
+	IronOnet github repo <https://github.com/irononet>
+COPYRIGHT 
+	2024 ARNAUD WANET ALL RIGHTS RESERVED, License MIT 
+	This is free software: you are free to change and redistribute it. There is no warranty, to the 
+	extent permitted by law.
+
 `
 
 
