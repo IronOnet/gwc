@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/irononet/gwc/gwc"
 	"github.com/spf13/cobra"
 )
+
+var version string = "0.1.0"
 
 var description string = `
 GWC(1)		User Commands		GWC(1)
@@ -54,13 +57,15 @@ DESCRIPTION
 AUTHOR
 	Written by Arnaud Wanet (IronOnet)
 
+REPORTING BUGS 
+	IronOnet github repo <https://github.com/irononet>
+COPYRIGHT 
+	2024 ARNAUD WANET ALL RIGHTS RESERVED, License MIT 
+	This is free software: you are free to change and redistribute it. There is no warranty, to the 
+	extent permitted by law.
+
 `
 
-var rootCmd *cobra.Command = &cobra.Command{
-	Use:   "gwc",
-	Short: "gwc, print newline, word, and bytes counts for each file",
-	Long:  description,
-}
 
 var mockCmd *cobra.Command = &cobra.Command{
 	Use: "mock", 
@@ -69,31 +74,126 @@ var mockCmd *cobra.Command = &cobra.Command{
 	Run: mockCommand,
 }
 
+
+var rootCmd *cobra.Command = &cobra.Command{
+	Use: "gwc", 
+	Short: "gwc, print newline, word, and bytes counts for each file", 
+	Long: description, 
+	Run: rootCmdF, // Prevents default behavior
+}
+
+func init(){
+
+	rootCmd.Flags().BoolP("chars", "m", false, "count the number of characters in a file")
+	rootCmd.Flags().BoolP("bytes", "c", false, "count the number of bytes in a file") 
+	rootCmd.Flags().BoolP("words", "w", false, "count the number of words in a file") 
+	rootCmd.Flags().BoolP("lines", "l", false, "count the number of lines in a file") 
+	rootCmd.Flags().BoolP("version", "v", false, "display the version number")
+}
+
 func main() {
-	rootCmd.AddCommand(mockCmd)
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
+	charFlag, err  := rootCmd.Flags().GetBool("chars")
+	if err != nil{
+		fmt.Println(err) 
+	}
+	bytesFlag, err := rootCmd.Flags().GetBool("bytes") 
+	if err != nil{
+		fmt.Println(err) 
+	}
+	wordsFlag, err := rootCmd.Flags().GetBool("words") 
+	if err != nil{
+		fmt.Println(err) 
+	}
+	linesFlag, err := rootCmd.Flags().GetBool("lines") 
+	if err != nil{
+		fmt.Println(err) 
+	}
+
+	versionFlag, err := rootCmd.Flags().GetBool("version") 
+	if err != nil{
+		fmt.Println(err)
+	}
+
+	if charFlag{
+		if len(os.Args) > 2{
+			filepath := os.Args[2] 
+			res, err := gwc.CountChar(filepath) 
+			if err != nil{
+				printFileNotFoundError(filepath)
+			}
+			fmt.Printf("%d %s\n", res, filepath)
+		} else{
+			fmt.Println("No file argument provided.") 
+		}
+	}
+	if bytesFlag{
+		if len(os.Args) > 2{
+			filepath := os.Args[2] 
+			res, err := gwc.CountBytes(filepath) 
+			if err != nil{
+				fmt.Printf("file not found %s\n", filepath) 
+			}
+			fmt.Printf("%d %s\n", res, filepath) 
+		} else{
+			fmt.Println("No file argument provided.") 
+		}
+	}
+
+	if wordsFlag{
+		if len(os.Args) > 2{
+			filepath := os.Args[2] 
+			res, err := gwc.CountWords(filepath) 
+			if err != nil{
+				printFileNotFoundError(filepath)
+			}
+			fmt.Printf("%d %s\n", res, filepath) 
+		} else{
+			fmt.Println("No file argument provided.") 
+		}
+	}
+
+	if linesFlag{
+		if len(os.Args) >2{
+			filepath := os.Args[2] 
+			res, err := gwc.CountLines(filepath) 
+			if err != nil{
+				printFileNotFoundError(filepath)
+			}
+			fmt.Printf("%d %s\n", res, filepath) 
+		} else{
+			fmt.Println("No file argument passed") 
+		}
+	}
+
+	if versionFlag{
+		fmt.Println("gwc version " + version) 
+	}
+
+	if len(os.Args) >= 1 && (!linesFlag) && (!bytesFlag) && (!wordsFlag) && (!charFlag){
+		filepath := os.Args[1] 
+		resWords, _ := gwc.CountWords(filepath) 
+		resBytes, _ := gwc.CountBytes(filepath) 
+		resLines, _ := gwc.CountLines(filepath) 
+		resChars, _ := gwc.CountChar(filepath) 
+		fmt.Printf("%d %d %d %d %s \n", resWords, resBytes, resLines, resChars, filepath) 
+	}
+
+
+}
+
+func rootCmdF(cmd *cobra.Command, args []string){
+
+}
+
+func printFileNotFoundError(filename string){
+	fmt.Printf("error file %s not found\n", filename)
 }
 
 func mockCommand(cmd *cobra.Command, args []string){
 	fmt.Println("this is a mock command")
-}
-
-func countCharsCmdF(cmd *cobra.Command, args []string){
-
-}
-
-func countWordsCmdF(cmd *cobra.Command, args []string){
-
-}
-
-func countLinesCmdF(cmd *cobra.Command, args []string){
-
-}
-
-func countBytesCmdF(cmd *cobra.Command, args []string){
-	
 }
